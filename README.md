@@ -1,7 +1,6 @@
 # Golang helper for parallel data processing
-
-Simple helper for fast starting processing big files/tables/logs/etc. This code has been developed and maintained by Ven at May 2015.
 ----------
+Simple helper for fast starting processing big files/tables/logs/etc. This code has been developed and maintained by Ven at May 2015.
 
 ## How it use
 
