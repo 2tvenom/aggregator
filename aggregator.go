@@ -88,6 +88,10 @@ func (a *Aggregator) CountPreProcessErrors() uint64 {
 	return a.statPreProcessErrors
 }
 
+func (a *Aggregator) CountMapErrors() uint64 {
+	return a.statMapErrors
+}
+
 func (a *Aggregator) CountProcessed() uint64 {
 	return a.statProcessed
 }
