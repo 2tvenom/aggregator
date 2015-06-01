@@ -3,6 +3,7 @@ package aggregator
 import (
 	"fmt"
 	"runtime"
+	"time"
 )
 
 type (
@@ -28,6 +29,7 @@ type (
 		statPreProcessErrors uint64
 		statMapErrors        uint64
 		statProcessed        uint64
+		executionTime        time.Duration
 	}
 )
 
@@ -96,6 +98,10 @@ func (a *Aggregator) CountProcessed() uint64 {
 	return a.statProcessed
 }
 
+func (a *Aggregator) ExecutionTime() time.Duration {
+	return a.executionTime
+}
+
 func (a *Aggregator) AddTask(t AggregatorTask) {
 	a.tasks = append(a.tasks, t)
 }
@@ -105,6 +111,8 @@ func (a *Aggregator) Start() {
 	if runtime.NumCPU() < requiredCpu {
 		panic(fmt.Sprintf("Requered %d CPU (MaxGoRoutines + 2)", requiredCpu))
 	}
+
+	start := time.Now()
 
 	for _, task := range a.tasks {
 		sourceData := make(chan interface{}, a.maxQueueLen)
@@ -124,4 +132,5 @@ func (a *Aggregator) Start() {
 		a.statMapErrors += workerPool.statMapErrors
 		a.statProcessed  += workerPool.statProcessed
 	}
+	a.executionTime = time.Now().Sub(start);
 }
