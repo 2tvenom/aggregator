@@ -15,7 +15,11 @@ type (
 	}
 
 	AggregatorEntityPreProcess interface {
-		PreProcess(interface{}) (interface{}, error)
+		EntityPreProcess(interface{}) (interface{}, error)
+	}
+
+	AggregatorTaskPostProcess interface {
+		PostProcess() error
 	}
 
 	Aggregator struct {
@@ -126,6 +130,10 @@ func (a *Aggregator) Start() {
 
 		workerPool.Done()
 		reducer.Done()
+
+		if taskPostProcess, ok := task.(AggregatorTaskPostProcess); ok {
+			taskPostProcess.PostProcess()
+		}
 
 		a.statReduceErrors += reducer.statReduceErrors
 		a.statPreProcessErrors += workerPool.statPreProcessErrors

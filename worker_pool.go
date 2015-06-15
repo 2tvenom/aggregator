@@ -62,7 +62,7 @@ func (p *workerPool) worker(id int) {
 		case data := <-p.dataSource:
 			if preProcessRequired {
 				var err error
-				data, err = preProcess.PreProcess(data)
+				data, err = preProcess.EntityPreProcess(data)
 				if err != nil {
 					atomic.AddUint64(&p.statPreProcessErrors, 1)
 				}
