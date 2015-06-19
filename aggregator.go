@@ -14,6 +14,10 @@ type (
 		Reduce(AggregatorTask) error
 	}
 
+	AggregatorSource interface {
+		Source(chan interface{})
+	}
+
 	AggregatorEntityPreProcess interface {
 		EntityPreProcess(interface{}) (interface{}, error)
 	}

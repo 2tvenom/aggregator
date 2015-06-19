@@ -56,7 +56,7 @@ func (p *workerPool) worker(id int) {
 	localCache := p.task.GetBlank()
 	counter := 0
 
-	preProcess, preProcessRequired := p.task.(AggregatorEntityPreProcess)
+	preProcess, preProcessRequired := localCache.(AggregatorEntityPreProcess)
 	for {
 		select {
 		case data := <-p.dataSource:
