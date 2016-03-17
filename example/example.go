@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/2tvenom/aggregator"
 	"fmt"
+	"time"
+	"math/rand"
 )
 
 type (
@@ -24,7 +26,8 @@ func (e *entity) GetBlank() aggregator.AggregatorTask {
 
 
 func (e *entity) Map(data interface{}) error {
-	e.count += data.(uint64)
+	e.count += 1
+	<-time.After(time.Millisecond * time.Duration(rand.Intn(3) * 50))
 	return nil
 }
 
@@ -37,6 +40,7 @@ func main() {
 	entityTask := &entity{}
 
 	a := aggregator.NewAggregator()
+	a.SetMaxEntityForReduce(3)
 	a.AddTask(entityTask)
 	a.Start()
 

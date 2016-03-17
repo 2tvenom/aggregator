@@ -53,43 +53,24 @@ func (p *workerPool) Done() {
 func (p *workerPool) worker(id int) {
 	defer p.wait.Done()
 
-	localCache := p.task.GetBlank()
-	counter := 0
-
-	preProcess, preProcessRequired := localCache.(AggregatorEntityPreProcess)
+	w := newWorker(p.reduceChan, p.task, p.reduceMaxCounter)
 	for {
 		select {
 		case data := <-p.dataSource:
-			if preProcessRequired {
-				var err error
-				data, err = preProcess.EntityPreProcess(data)
-				if err != nil {
-					atomic.AddUint64(&p.statPreProcessErrors, 1)
-				}
+			w.process(data)
+
+		case <-p.exitChan:
+			for len(p.dataSource) > 0 {
+				w.process(<-p.dataSource)
 			}
 
-			err := localCache.Map(data)
-			if err != nil {
-				atomic.AddUint64(&p.statMapErrors, 1)
-				continue
-			}
-			atomic.AddUint64(&p.statProcessed, 1)
-			counter++
+			w.flushCache()
 
-			if counter >= p.reduceMaxCounter {
-				p.reduceChan <- localCache
-				localCache = p.task.GetBlank()
-				counter = 0
-			}
+			atomic.AddUint64(&p.statPreProcessErrors, w.statPreProcessErrors)
+			atomic.AddUint64(&p.statMapErrors, w.statMapErrors)
+			atomic.AddUint64(&p.statProcessed, w.statProcessed)
 
-		default:
-			select {
-			case <-p.exitChan:
-				p.reduceChan <- localCache
-				return
-			default:
-
-			}
+			return
 		}
 	}
 }
