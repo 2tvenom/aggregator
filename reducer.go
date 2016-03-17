@@ -54,14 +54,18 @@ func (r *reducer) start() {
 			}
 
 			r.mutex.Unlock()
-		default:
-			select {
-			case <-r.exitChan:
+		case <-r.exitChan:
+			for len(r.reduceChan) > 0 {
+				r.mutex.Lock()
+				err := r.task.Reduce(<-r.reduceChan)
 
-				return
-			default:
+				if err != nil {
+					atomic.AddUint64(&r.statReduceErrors, 1)
+				}
 
+				r.mutex.Unlock()
 			}
+			return
 		}
 	}
 }
