@@ -115,10 +115,10 @@ func (a *Aggregator) AddTask(t AggregatorTask) {
 }
 
 func (a *Aggregator) Start() {
-	requiredCpu := a.maxGoRoutines + 2
-	if runtime.NumCPU() < requiredCpu {
-		panic(fmt.Sprintf("Requered %d CPU (MaxGoRoutines + 2)", requiredCpu))
-	}
+	//requiredCpu := a.maxGoRoutines + 2
+	//if runtime.NumCPU() < requiredCpu {
+	//	panic(fmt.Sprintf("Requered %d CPU (MaxGoRoutines + 2)", requiredCpu))
+	//}
 
 	start := time.Now()
 
