@@ -1,8 +1,6 @@
 package aggregator
 
 import (
-	"fmt"
-	"runtime"
 	"time"
 )
 
