@@ -3,6 +3,7 @@ package aggregator
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 type (
@@ -58,7 +59,12 @@ func (p *workerPool) worker(id int) {
 		select {
 		case data := <-p.dataSource:
 			w.process(data)
+		case <-time.Tick(time.Second * 10):
+			for len(p.dataSource) > 0 {
+				w.process(<-p.dataSource)
+			}
 
+			w.flushCache()
 		case <-p.exitChan:
 			for len(p.dataSource) > 0 {
 				w.process(<-p.dataSource)
